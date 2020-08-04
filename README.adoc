@@ -27,7 +27,7 @@ choice/sequence expressions are supported.
  
 === Installation
  
-* `pip install rayfcmaes`
+* `pip install fcmaesray`
 
 Since ray doesn't support Windows, use the single node https://github.com/dietmarwo/fast-cma-es/blob/master/Readme.adoc[fcmaes] 
 if you are on Windows or use the
@@ -47,7 +47,7 @@ For multi-node coordinated parallel retry use:
 [source,python]
 ----
 from fcmaes.optimizer import logger
-from rayfcmaes import rayretry
+from fcmaesray import rayretry
 ret = rayretry.minimize(fun, bounds, logger=logger())
 ----
 
