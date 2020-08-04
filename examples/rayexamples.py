@@ -23,8 +23,8 @@ def messengerFullLoop(opt, num, max_time = 1200, log = logger()):
     minimizers = None # remote actors created by minimize will be reused
     log.info(problem.name + ' ' + opt.name)
     for i in range(num):    
-        ret, minimizers = minimize(problem.fun, bounds=problem.bounds, max_nodes, None, num_retries = 30000, 
-            value_limit = 12.0, logger = log, max_time=max_time, minimizers=minimizers)
+        ret, minimizers = minimize(problem.fun, bounds=problem.bounds, max_nodes, None, num_retries = 20000, 
+            value_limit = 12.0, logger = log, optimizer=de_cma(min_evals), max_time=max_time, minimizers=minimizers)
     print("solution: ", i+1, ret.fun, str(ret.x))
     for minimizer in minimizers:
         ray.get(minimizer.terminate.remote())
@@ -48,7 +48,7 @@ def main():
     # do 'pip install fcmaesray'
     # see https://docs.ray.io/en/master/cluster/index.html 
     # call 'ray start --head --num-cpus=1' on the head node and
-    # the ip-adress logged needs to be replaced in the following commands executed pn the worker nodes:
+    # the ip-adress logged needs to be replaced in the following commands executed at the worker nodes:
     # 'ray start --address=192.168.0.67:6379 --num-cpus=1'
     # adapt ip-adress also in the following ray.init command 
     ray.init(address = "192.168.0.67:6379")#, include_webui=True)

@@ -16,7 +16,7 @@ from multiprocessing import Process
 from numpy.random import Generator, MT19937, SeedSequence
 from scipy.optimize import OptimizeResult, Bounds
 
-from fcmaes.optimizer import fitting, de3_cma, logger
+from fcmaes.optimizer import fitting, de_cma, logger
 from fcmaes.advretry import Store
 
 os.environ['MKL_DEBUG_CPU_TYPE'] = '5'
@@ -107,15 +107,14 @@ def minimize(fun,
         Important attributes are: ``x`` the solution array, 
         ``fun`` the best function value, ``nfev`` the number of function evaluations,
         ``success`` a Boolean flag indicating if the optimizer exited successfully. """
-    
-    # determine the number of nodes connected
-    # len(ray.nodes()) seems not not work for ray 0.8.6
-    ipadrs = set(ray.get([remote_ipadr.remote() for _ in range(10*max_nodes)]))
-    if not logger is None:
-        logger.info("cluster optimization on nodes: " + str(ipadrs))
-    nodes = min(max_nodes, len(ipadrs))
-    
+        
     if minimizers is None:
+        # determine the number of nodes connected
+        # len(ray.nodes()) seems not not work for ray 0.8.6
+        ipadrs = set(ray.get([remote_ipadr.remote() for _ in range(2000)]))
+        if not logger is None:
+            logger.info("cluster optimization on nodes: " + str(ipadrs))
+        nodes = min(max_nodes, len(ipadrs))        
         minimizers = []   
         ips = {}
         master_ip = ipadr()
@@ -138,7 +137,6 @@ def minimize(fun,
     for minimizer in minimizers:
         ray.get(minimizer.init.remote(
                     bounds, 
-                    logger,
                     workers,
                     value_limit,
                     num_retries,
@@ -157,6 +155,8 @@ def minimize(fun,
         time.sleep(1)
         improved = False
         for minimizer in minimizers:
+            # polling is ugly but experiments with a coordinator actor failed
+            # should be refactored when ray improves
             if ray.get(minimizer.is_improved.remote()):
                 improved = True
                 y, xs, lower, upper = ray.get(minimizer.best.remote(0))
@@ -190,14 +190,12 @@ class Minimizer(object):
                  rid,
                  fun, 
                  ):      
+        self.master_ip = master_ip
         self.rid = rid
         self.fun = fun
-        if ipadr() != master_ip:
-            logger = None                
      
     def init(self,
              bounds, 
-             logger,
              workers,
              value_limit,
              num_retries,
@@ -210,10 +208,10 @@ class Minimizer(object):
              optimizer
              ):
         if optimizer is None:
-            optimizer = de3_cma(self.min_evaluations, popsize, stop_fittness)     
+            optimizer = de_cma(self.min_evaluations, popsize, stop_fittness)     
         if max_eval_fac is None:
             max_eval_fac = int(min(50, 1 + num_retries // check_interval))
-        self.store = Store(bounds, max_eval_fac, check_interval, capacity, logger, num_retries)                       
+        self.store = Store(bounds, max_eval_fac, check_interval, capacity, None, num_retries)                       
         self.improved = mp.RawValue(ct.c_bool, False)
         self.bounds = bounds
         self.workers = mp.cpu_count() if workers is None else workers
