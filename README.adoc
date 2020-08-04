@@ -1,0 +1,104 @@
+:encoding: utf-8
+:imagesdir: img
+:cpp: C++
+
+= fcmaesray - a multi-node Python 3 gradient-free optimization library
+
+fcmaesray extends https://github.com/dietmarwo/fast-cma-es/blob/master/Readme.adoc[fcmaes] for multi-node execution.
+It uses the cluster support of the https://docs.ray.io/en/master/cluster/index.html[ray] library. 
+
+=== Features
+
+- fcmaesray is focused on optimization problems hard to solve.
+- Using a cluster the load computing expensive objective functions involving simulations or solving differential equations can be distributed.   
+- During optimization good solutions are transfered between nodes so that information is shared.
+- A single ray actor executes the fcmaes coordinated retry on each node.
+- Local node interprocess communication is shared memory based as in fcmaes which is faster than using ray for this purpose. 
+- Minimal message transfer overhead, only local improvements are broadcasted to the other nodes.
+- No explicit support for AWS, Azure, GCP and Kubernetes yet. ray supports these cloud platforms, so a deployment on these is possible, but currently the only example included is for local cloud.  
+
+ 
+=== Optimization algorithms
+
+See https://github.com/dietmarwo/fast-cma-es/blob/master/Readme.adoc[fcmaes]. Default algorithm is a sequence of 
+a random choice of state of the art differential evolution variants including GCL-DE from Mingcheng Zuo
+and CMA-ES all implemented in {cpp}. Other algorithms from scipy and NLopt can be used and arbitrary 
+choice/sequence expressions are supported. 
+ 
+=== Installation
+ 
+* `pip install rayfcmaes`
+
+Since ray doesn't support Windows, use the single node https://github.com/dietmarwo/fast-cma-es/blob/master/Readme.adoc[fcmaes] 
+if you are on Windows or use the
+
+* Linux subsystem for Windows:
+- https://docs.microsoft.com/en-us/windows/wsl/install-win10[Linux subsystem] or
+- https://superuser.com/questions/1271682/is-there-a-way-of-installing-ubuntu-windows-subsystem-for-linux-on-win10-v170[Ubuntu subsystem].
+
+The Linux subsystem can read/write NTFS, so you can do your development on a NTFS partition. Just the Python call is routed to Linux. 
+
+=== Usage
+
+Usage is similar to https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html[scipy.optimize.minimize].
+
+For multi-node coordinated parallel retry use:
+
+[source,python]
+----
+from fcmaes.optimizer import logger
+from rayfcmaes import rayretry
+ret = rayretry.minimize(fun, bounds, logger=logger())
+----
+
+`rayretry.minimize` has many parameters for fine tuning, but in most of the cases the default settings work well. 
+
+=== Log output of the parallel retry
+
+The log output of the coordinated parallel retry is compatible to the single node execution log and contains the following rows:
+
+- time (in sec)
+- evaluations / sec - currently not supported for multi-node execution
+- number of retries - optimization runs - currently not supported for multi-node execution
+- total number of evaluations in all retries -currently not supported for multi-node execution
+- best value found so far
+- worst value in the retry store
+- number of entries in the retry store
+- list of the best 20 function values in the retry store
+- best solution (x-vector) found so far
+
+The master node retry store shown only contains solution improvements exchanged by the worker nodes.  
+
+=== Dependencies
+
+Runtime:
+
+- fcmaes: https://github.com/dietmarwo/fast-cma-es
+- ray: https://github.com/ray-project/ray
+
+Optional dependencies:
+
+- NLopt: https://nlopt.readthedocs.io/en/latest/[NLopt]. Install with 'pip install nlopt'. 
+
+=== Performance
+
+On a five node (4 x AMD 3950x + 1 x AMD 2990WX) local CPU cluster using 
+https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh[Anaconda 2020.2] for Linux, 
+ray version 0.8.6 and fcmaes version 1.1.11 the parallel coordinated retry mechanism 
+solves ESAs 26-dimensional https://www.esa.int/gsp/ACT/projects/gtop/messenger_full/[Messenger full] problem
+in about 20 minutes on average.
+
+The Messenger full benchmark models a
+multi-gravity assist interplanetary space mission from Earth to Mercury. In 2009 the first good solution (6.9 km/s)
+was submitted. It took more than five years to reach 1.959 km/s and three more years until 2017 to find the optimum 1.958 km/s. The picture below shows the progress of the whole science community since 2009:
+
+image::Fsc.png[]  
+
+The following picture shows 20 runs, each about 20 minutes. 
+
+image::mf3.6000.png[]  
+
+To reproduce execute https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/rayexamples.py[rayexamples.py] on a similar cluster.
+
+For comparison: http://www.midaco-solver.com/data/pub/PDPTA20_Messenger.pdf[MXHCP paper] shows that using 1000 cores of the the Hokudai Supercomputer using Intel Xeon Gold 6148 CPU’s with a clock rate of 2.7 GHz Messenger Full can be solved in about 1 hour using the MXHCP algorithm. 
+
