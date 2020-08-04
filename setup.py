@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 def get_version():
-    with open("fcmaes/__init__.py", "r") as f:
+    with open("fcmaesray/__init__.py", "r") as f:
         match = re.search(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$", f.read())
         return match.group(1)
 
@@ -17,11 +17,11 @@ setup(
     long_description_content_type="text/markdown",
     author='Dietmar Wolz',
     author_email='drdietmarwolz@yahoo.de',
-    url='https://github.com/dietmarwo/fast-cma-es',
+    url='https://github.com/dietmarwo/fcmaes-ray',
     license='MIT',
     packages=find_packages(),
     install_requires=[
-          'numpy', 'scipy'
+          'ray', 'fcmaes'
     ],
     classifiers = [
       "Intended Audience :: Science/Research",
@@ -37,6 +37,6 @@ setup(
       "Environment :: Console",
       "License :: OSI Approved :: MIT License",
       ],
-    keywords=["optimization", "CMA-ES", "Harris hawks", "differential evolution", "dual annealing", "fast CMA", "stochastic", "gradient free", "parallel retry"],
+    keywords=["optimization", "CMA-ES", "differential evolution", "stochastic", "gradient free", "parallel retry", "multi node", "ray", "fcmaes"],
     include_package_data=True,
    )
