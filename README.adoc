@@ -4,7 +4,7 @@
 
 = fcmaesray - a multi-node Python 3 gradient-free optimization library
 
-fcmaesray extends https://github.com/dietmarwo/fast-cma-es/blob/master/Readme.adoc[fcmaes] for multi-node execution.
+fcmaesray extends https://github.com/dietmarwo/fast-cma-es/blob/master/README.adoc[fcmaes] for multi-node execution.
 It uses the cluster support of the https://docs.ray.io/en/master/cluster/index.html[ray] library. 
 
 === Features
