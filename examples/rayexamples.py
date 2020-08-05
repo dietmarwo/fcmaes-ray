@@ -8,14 +8,14 @@
 import ray
 
 from fcmaes.astro import MessFull, Messenger, Cassini2, Rosetta, Gtoc1, Cassini1, Tandem, Sagas, Cassini1minlp
-from fcmaes.optimizer import logger, de_cma, de3_cma, da_cma, Cma_cpp, De_cpp, Da_cpp, Hh_cpp, Dual_annealing, Differential_evolution, GCLDE_cpp, LCLDE_cpp, LDe_cpp, Sequence
+from fcmaes.optimizer import logger, de_cma, de2_cma, da_cma, Cma_cpp, De_cpp, Da_cpp, Hh_cpp, Dual_annealing, Differential_evolution, GCLDE_cpp, LCLDE_cpp, LDe_cpp, Sequence
 from fcmaesray.rayretry import minimize
 
 min_evals = 1500
 max_nodes = 100
 
 problems = [Cassini1(), Cassini2(), Rosetta(), Tandem(5), Messenger(), Gtoc1(), MessFull(), Sagas(), Cassini1minlp()]
-algos = [de3_cma(min_evals), de_cma(min_evals), da_cma(min_evals), Cma_cpp(min_evals), De_cpp(min_evals), Hh_cpp(min_evals),
+algos = [de2_cma(min_evals), de_cma(min_evals), da_cma(min_evals), Cma_cpp(min_evals), De_cpp(min_evals), Hh_cpp(min_evals),
          Da_cpp(min_evals), Dual_annealing(min_evals), Differential_evolution(min_evals)]
 
 def messengerFullLoop(opt, num, max_time = 1200, log = logger()):    
@@ -54,7 +54,7 @@ def main():
     ray.init(address = "192.168.0.67:6379")#, include_webui=True)
     #ray.init() # for single node tests
     #test_all() # test all problems
-    messengerFullLoop(de_cma(min_evals), 1000) # test messenger full
+    messengerFullLoop(de2_cma(min_evals), 1000) # test messenger full
 
 if __name__ == '__main__':
     main()

@@ -308,3 +308,4 @@ def _add_result(y, xs, lower, upper, evals, limit, store, minimizer):
     if y < minimizer.value_limit and y < store.best_y.value:
         minimizer.improved.value = True # register improvement         
     store.add_result(y, xs, lower, upper, evals, limit)  
+            
