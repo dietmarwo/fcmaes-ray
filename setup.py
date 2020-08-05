@@ -10,9 +10,9 @@ def get_version():
         return match.group(1)
 
 setup(
-    name='fcmaes',
+    name='fcmaesray',
     version=get_version(),
-    description=('A Python 3 gradient-free optimization library.'),
+    description=('A multi-node Python 3 gradient-free optimization library.'),
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Dietmar Wolz',
