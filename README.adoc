@@ -102,9 +102,9 @@ was submitted. It took more than five years to reach 1.959 km/s and three more y
 
 image::Fsc.png[]  
 
-The following picture shows the best score reached over time for 20 runs using the five node cluster above. 
-
-image::mf3.6000.png[]  
+The following picture shows the best score reached over time for 20 runs using the five node cluster above:
+ 
+-- will be added soon --
 
 To reproduce execute https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/rayexamples.py[rayexamples.py] on a similar cluster.
 
