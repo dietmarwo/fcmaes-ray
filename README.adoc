@@ -42,7 +42,7 @@ Usage is similar to https://docs.scipy.org/doc/scipy/reference/generated/scipy.o
 
 ==== Local cluster multi-node coordinated parallel retry
 
-- See https://docs.ray.io/en/master/cluster/index.html[Ray local cluster setup] 
+- See https://docs.ray.io/en/master/cluster/index.html[ray local cluster setup] 
 
 To start a ray cluster manually:
 
