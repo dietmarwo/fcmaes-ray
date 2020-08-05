@@ -23,7 +23,7 @@ def messengerFullLoop(opt, num, max_time = 1200, log = logger()):
     minimizers = None # remote actors created by minimize will be reused
     log.info(problem.name + ' ' + opt.name)
     for i in range(num):    
-        ret, minimizers = minimize(problem.fun, bounds=problem.bounds, max_nodes, None, num_retries = 20000, 
+        ret, minimizers = minimize(problem.fun, problem.bounds, max_nodes, None, num_retries = 20000, 
             value_limit = 12.0, logger = log, optimizer=de_cma(min_evals), max_time=max_time, minimizers=minimizers)
     print("solution: ", i+1, ret.fun, str(ret.x))
     for minimizer in minimizers:
