@@ -48,17 +48,17 @@ To start a ray cluster manually:
 
 - Make sure fcmaesray is installed at each node ('pip install fcmaesray')
 - Additionally your objective function needs to be installed on each node.
-- Then call 'ray start --head --num-cpus=1' on the head node
+- Then call 'ray start --head --num-cpus=1' on the head node.
 
 Make sure to replace <address> with the value printed by the command on the head node.
 <address> should look like '192.168.0.67:6379'. On all worker nodes execute.
 
 - 'ray start --address=<address> --num-cpus=1'.
-- adapt <address> also in the ray.init command in your code:
+- adapt <address> also in the ray.init command in your code.
 
 We use "--num-cpus=1" because only one actor is deployed at each node controlling the local coordinated retry.
 This uses (as for single node fcmaes) shared memory to exchange solutions between local processes. So ray needs only
-one CPU per node. 
+one CPU per node. Your code looks like:
 
 [source,python]
 ----
