@@ -92,7 +92,7 @@ Optional dependencies:
 
 On a five node (4 x AMD 3950x + 1 x AMD 2990WX) local CPU cluster using 
 https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh[Anaconda 2020.2] for Linux, 
-ray version 0.8.6 and fcmaes version 1.1.11 the parallel coordinated retry mechanism 
+ray version 0.8.6 and fcmaes version 1.1.12 the parallel coordinated retry mechanism 
 solves ESAs 26-dimensional https://www.esa.int/gsp/ACT/projects/gtop/messenger_full/[Messenger full] problem
 in about 20 minutes on average.
 
