@@ -40,21 +40,35 @@ The Linux subsystem can read/write NTFS, so you can do your development on a NTF
 
 Usage is similar to https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html[scipy.optimize.minimize].
 
-For local cluster multi-node coordinated parallel retry use:
+==== Local cluster multi-node coordinated parallel retry
 
-* see https://docs.ray.io/en/master/cluster/index.html 
-* call 'ray start --head --num-cpus=1' on the head node and
-* the ip-adress logged needs to be replaced in the following commands executed at the worker nodes:
-* 'ray start --address=192.168.0.67:6379 --num-cpus=1'
-* adapt ip-adress also in the following ray.init command 
-* ray.init(address = "192.168.0.67:6379")#, include_webui=True)
-* ray.init() # for single node tests
+- See https://docs.ray.io/en/master/cluster/index.html[Ray local cluster setup] 
 
+To start a ray cluster manually:
+
+- Make sure fcmaesray is installed at each node ('pip install fcmaesray')
+- Additionally your objective function needs to be installed on each node.
+- Then call 'ray start --head --num-cpus=1' on the head node
+
+Make sure to replace <address> with the value printed by the command on the head node.
+<address> should look like '192.168.0.67:6379'. On all worker nodes execute.
+
+- 'ray start --address=<address> --num-cpus=1'.
+- adapt <address> also in the ray.init command in your code:
+
+We use "--num-cpus=1" because only one actor is deployed at each node controlling the local coordinated retry.
+This uses (as for single node fcmaes) shared memory to exchange solutions between local processes. So ray needs only
+one CPU per node. 
 
 [source,python]
 ----
+import ray
 from fcmaes.optimizer import logger
 from fcmaesray import rayretry
+
+ray.init(address = "<address>")
+# ray.init() # for single node tests on your laptop
+
 ret = rayretry.minimize(fun, bounds, logger=logger())
 ----
 
@@ -100,11 +114,12 @@ The Messenger full benchmark models a
 multi-gravity assist interplanetary space mission from Earth to Mercury. In 2009 the first good solution (6.9 km/s)
 was submitted. It took more than five years to reach 1.959 km/s and three more years until 2017 to find the optimum 1.958 km/s. The picture below shows the progress of the whole science community since 2009:
 
-image::Fsc.png[]  
+image::multi_node_coordinated_parallel_retry6.png[]  
 
-The following picture shows the best score reached over time for 20 runs using the five node cluster above:
+The following picture shows the best score reached over time for 40 runs limited to 1500 sec using the five node cluster above:
+33 out of these 40 runs reached a score <= 2.0, 7 needed more than 1500 sec.
  
--- will be added soon --
+image::multi_node_coordinated_parallel_retry2.png[]
 
 To reproduce execute https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/rayexamples.py[rayexamples.py] on a similar cluster.
 
