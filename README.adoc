@@ -114,10 +114,11 @@ The Messenger full benchmark models a
 multi-gravity assist interplanetary space mission from Earth to Mercury. In 2009 the first good solution (6.9 km/s)
 was submitted. It took more than five years to reach 1.959 km/s and three more years until 2017 to find the optimum 1.958 km/s. The picture below shows the progress of the whole science community since 2009:
 
+The following picture shows the best score reached over time for 40 runs limited to 1500 sec using the five node cluster above:
+
 image::multi_node_coordinated_parallel_retry6.png[]  
 
-The following picture shows the best score reached over time for 40 runs limited to 1500 sec using the five node cluster above:
-33 out of these 40 runs reached a score <= 2.0, 7 needed more than 1500 sec.
+33 out of these 40 runs reached a score <= 2.0, 7 needed more than 1500 sec:
  
 image::multi_node_coordinated_parallel_retry2.png[]
 
