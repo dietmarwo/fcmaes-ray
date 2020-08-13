@@ -15,6 +15,7 @@ It uses the cluster support of the https://docs.ray.io/en/master/cluster/index.h
 - A single ray actor executes the fcmaes coordinated retry on each node.
 - Local node interprocess communication is shared memory based as in fcmaes which is faster than using ray for this purpose. 
 - Minimal message transfer overhead, only local improvements are broadcasted to the other nodes.
+- Alternatively you can simultaneously optimize a list of problem variants to find out which variant delivers the best solution. For instance the https://www.esa.int/gsp/ACT/projects/gtop/tandem/[TandEM] problem where the variants correspond to planet sequences. Bad variants are successively filtered out. The variants are distributed over all available nodes.   
 - No explicit support for AWS, Azure, GCP and Kubernetes yet. ray supports these cloud platforms, so a deployment on these is possible, but currently the only example included is for local cloud.  
 
  
@@ -74,6 +75,9 @@ ret = rayretry.minimize(fun, bounds, logger=logger())
 
 `rayretry.minimize` has many parameters for fine tuning, but in most of the cases the default settings work well.
 See https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/rayexamples.py[rayexamples.py] for more example code. 
+
+https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/raytandem.py[raytandem.py] shows how multiple variants of the same
+problem can be distributed over multiple nodes - https://github.com/dietmarwo/fast-cma-es/blob/master/MINLP.adoc[MINLP] explains the TandEM multi-problem for single node optimization.
 
 === Log output of the parallel retry
 
