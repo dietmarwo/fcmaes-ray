@@ -18,6 +18,7 @@ It uses the cluster support of the https://docs.ray.io/en/master/cluster/index.h
 - Alternatively you can simultaneously optimize a list of problem variants to find out which variant delivers the best solution. For instance the https://www.esa.int/gsp/ACT/projects/gtop/tandem/[TandEM] problem where the variants correspond to planet sequences. Bad variants are successively filtered out. The variants are distributed over all available nodes.   
 - No explicit support for AWS, Azure, GCP and Kubernetes yet. ray supports these cloud platforms, so a deployment on these is possible, but currently the only example included is for local cloud.  
 
+image::clustered_retry.jpg[]
  
 === Optimization algorithms
 
