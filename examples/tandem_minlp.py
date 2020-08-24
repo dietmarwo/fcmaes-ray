@@ -5,7 +5,7 @@
 
 # MINLP variant of the determination of the
 # TandEM https://www.esa.int/gsp/ACT/projects/gtop/tandem/ problem
-# planet sequence, see https://github.com/dietmarwo/fast-cma-es/blob/master/MINLP.adoc
+# planet sequence, see https://github.com/dietmarwo/fcmaes-ray/blob/master/MULTI.adoc
 
 import ray
 

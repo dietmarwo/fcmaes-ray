@@ -78,7 +78,8 @@ ret = rayretry.minimize(fun, bounds, logger=logger())
 See https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/rayexamples.py[rayexamples.py] for more example code. 
 
 https://github.com/dietmarwo/fcmaes-ray/blob/master/examples/raytandem.py[raytandem.py] shows how multiple variants of the same
-problem can be distributed over multiple nodes - https://github.com/dietmarwo/fast-cma-es/blob/master/MINLP.adoc[MINLP] explains the TandEM multi-problem for single node optimization.
+problem can be distributed over multiple nodes. https://github.com/dietmarwo/fcmaes-ray/blob/master/MULTI.adoc[MULTI] explains 
+how the TandEM multi-problem can be solved utilizing all cluster nodes. 
 
 === Log output of the parallel retry
 
