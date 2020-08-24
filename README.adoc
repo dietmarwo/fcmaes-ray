@@ -21,7 +21,7 @@ image::clustered_retry.jpg[]
 
 === AWS, Azure, GCP and Kubernetes
 
-To run fcmaesray on cloud cluster follow the instructions to do this with ray:
+To run fcmaesray on a cloud cluster follow the corresponding ray instructions:
 
 - Adapt the ray docker creation script (https://docs.ray.io/en/latest/installation.html?highlight=docker#docker-source-images[Create Docker Image]) to include fcmaesray.
 - Check https://docs.ray.io/en/latest/cluster/cloud.html[Launching Cloud Clusters] how to launch cloud clusters. You should adapt the cloud configuration to use a 
