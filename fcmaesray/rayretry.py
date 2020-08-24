@@ -25,7 +25,7 @@ os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 def minimize(fun, 
              bounds, 
-             max_nodes,
+             max_nodes = None,
              workers = None,
              num_retries = 5000,
              value_limit = math.inf,
@@ -114,7 +114,7 @@ def minimize(fun,
         ipadrs = set(ray.get([remote_ipadr.remote() for _ in range(2000)]))
         if not logger is None:
             logger.info("cluster optimization on nodes: " + str(ipadrs))
-        nodes = min(max_nodes, len(ipadrs))        
+        nodes = len(ipadrs) if max_nodes is None else min(max_nodes, len(ipadrs))        
         minimizers = []   
         ips = {}
         master_ip = ipadr()

@@ -7,14 +7,15 @@
 # then uses coordinated retry to evaluate these.
 
 import ray
+import time
 import numpy as np
 import multiprocessing as mp
 from scipy.optimize import OptimizeResult
-from fcmaes.optimizer import logger, de_cma
+from fcmaes.optimizer import logger, de2_cma, dtime
 from fcmaes import advretry
 
 def minimize(problems, ids=None, num_retries = min(256, 8*mp.cpu_count()), 
-             keep = 0.7, optimizer = de_cma(1500), logger = logger()):
+             keep = 0.7, optimizer = de2_cma(1500), logger = logger()):
       
     """Minimization of a list of optimization problems by first applying parallel retry
     to filter the best ones and then applying coordinated retry to evaluate these further. 
@@ -63,22 +64,24 @@ def minimize(problems, ids=None, num_retries = min(256, 8*mp.cpu_count()),
         
     for i in range(n):    
         id = str(i+1) if ids is None else ids[i]   
-        rps = problem_stats.remote(problems[i], id, num_retries, logger)
+        rps = problem_stats.remote(problems[i], id, i, num_retries, logger)
         solver.add(problems[i], rps)
-        
+    
+    iter = 1    
     while solver.size() > 1:    
         solver.retry(optimizer)
         to_remove = int(round((1.0 - keep) * solver.size()))
         if to_remove == 0:
             to_remove = 1
         solver.remove_worst(to_remove)
-        solver.dump_all()
+        solver.dump_all(iter)
+        iter += 1
     return solver.all_stats
 
 @ray.remote        
 class problem_stats:
 
-    def __init__(self, prob, id, num_retries = 64, logger = logger()):
+    def __init__(self, prob, id, index, num_retries = 64, logger = logger()):
         self.store = advretry.Store(prob.bounds, logger = logger)
         self.prob = prob
         self.name = prob.name
@@ -87,6 +90,7 @@ class problem_stats:
         self.retries = 0
         self.value = 0
         self.id = id
+        self.index = index
         self.ret = None
 
     def retry(self, optimizer):
@@ -101,6 +105,9 @@ class problem_stats:
 
     def id(self):
         return self.id
+
+    def index(self):
+        return self.index
 
     def value(self):
         return self.value
@@ -120,7 +127,8 @@ class multiretry:
         self.problems = []
         self.problems_stats = []
         self.all_stats = []
-    
+        self.t0 = time.perf_counter()
+  
     def add(self, problem, problem_stats):
         self.problems.append(problem)        
         self.problems_stats.append(problem_stats)
@@ -129,7 +137,6 @@ class multiretry:
     def retry(self, optimizer):
         ys = []
         for ps in self.problems_stats:
-            logger().info("problem " + ray.get(ps.name.remote()) + ' ' + str(ray.get(ps.id.remote())))
             ys.append(ps.retry.remote(optimizer))
         for y in ys:
             ray.get(y)
@@ -145,21 +152,20 @@ class multiretry:
 
     def size(self):
         return len(self.problems_stats)
-                    
-    def dump(self):
-        for i in range(self.size()):
-            ps = self.problems_stats[i]
-            logger().info(str(ray.get(ps.id.remote())) + ' ' + str(ray.get(ps.value.remote())))
-                
+                                    
     def values_all(self):
         return np.array([ray.get(ps.value.remote()) for ps in self.all_stats])
  
-    def dump_all(self):
+    def dump_all(self, iter):
         idx = self.values_all().argsort()
         self.all_stats = list(np.asarray(self.all_stats)[idx])
+        logger().info("iteration " + str(iter))
         for i in range(len(self.all_stats)):
             ps = self.all_stats[i]
-            logger().info(str(ray.get(ps.id.remote())) + ' ' + str(ray.get(ps.value.remote())))
+            logger().info("problem " + ray.get(ps.name.remote()) 
+                          + ' ' + str(ray.get(ps.id.remote())) 
+                          + ' ' + str(ray.get(ps.value.remote())) 
+                          + ' time = ' + str(dtime(self.t0)))
         
     def result(self):
         idx = self.values_all().argsort()
