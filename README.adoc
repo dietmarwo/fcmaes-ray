@@ -15,10 +15,18 @@ It uses the cluster support of the https://docs.ray.io/en/master/cluster/index.h
 - A single ray actor executes the fcmaes coordinated retry on each node.
 - Local node interprocess communication is shared memory based as in fcmaes which is faster than using ray for this purpose. 
 - Minimal message transfer overhead, only local improvements are broadcasted to the other nodes.
-- Alternatively you can simultaneously optimize a list of problem variants to find out which variant delivers the best solution. For instance the https://www.esa.int/gsp/ACT/projects/gtop/tandem/[TandEM] problem where the variants correspond to planet sequences. Bad variants are successively filtered out. The variants are distributed over all available nodes.   
-- No explicit support for AWS, Azure, GCP and Kubernetes yet. ray supports these cloud platforms, so a deployment on these is possible, but currently the only example included is for local cloud.  
+- Alternatively you can simultaneously optimize a list of problem variants to find out which variant delivers the best solution. For instance the https://www.esa.int/gsp/ACT/projects/gtop/tandem/[TandEM] problem where the variants correspond to planet sequences. Bad variants are successively filtered out. The variants are distributed over all available nodes. 
 
 image::clustered_retry.jpg[]
+
+=== AWS, Azure, GCP and Kubernetes
+
+To run fcmaesray on cloud cluster follow the instructions to do this with ray:
+
+- Adapt the ray docker creation script (https://docs.ray.io/en/latest/installation.html?highlight=docker#docker-source-images[Create Docker Image]) to include fcmaesray.
+- Check https://docs.ray.io/en/latest/cluster/cloud.html[Launching Cloud Clusters] how to launch cloud clusters. You should adapt the cloud configuration to use a 
+fixed number of nodes (no autoscaling).
+
  
 === Optimization algorithms
 

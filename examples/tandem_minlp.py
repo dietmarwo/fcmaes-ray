@@ -15,7 +15,7 @@ from fcmaesray.rayretry import minimize
 
 max_nodes = 100
 
-def test_tandem_minlp(opt, num, max_time = 1200, log = logger()):    
+def test_tandem_minlp(opt, num, max_time = 1500, log = logger()):    
     problem = Tandem_minlp()
     minimizers = None # remote actors created by minimize will be reused
     log.info(problem.name + ' ' + opt.name)
@@ -36,7 +36,7 @@ def main():
     # adapt ip-adress also in the following ray.init command 
     ray.init(address = "192.168.0.67:6379")#, include_webui=True)
     #ray.init() # for single node tests
-    test_tandem_minlp(de2_cma(1500), 1)
+    test_tandem_minlp(de2_cma(1500), 10)
     
 if __name__ == '__main__':
     main()

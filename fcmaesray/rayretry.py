@@ -111,7 +111,7 @@ def minimize(fun,
     if minimizers is None:
         # determine the number of nodes connected
         # len(ray.nodes()) seems not not work for ray 0.8.6
-        ipadrs = set(ray.get([remote_ipadr.remote() for _ in range(6000)]))
+        ipadrs = set(ray.get([remote_ipadr.remote() for _ in range(20000)]))
         if not logger is None:
             logger.info("cluster optimization on nodes: " + str(ipadrs))
         nodes = len(ipadrs) if max_nodes is None else min(max_nodes, len(ipadrs))        
